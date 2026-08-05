@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#123c35" />
+    <title>순찰차 탑재장비 교육 | 장비 학습</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <script src="data/equipment.js" defer></script>
+    <script src="scripts/shared.js" defer></script>
+    <script src="scripts/equipment-page.js" defer></script>
+  </head>
+  <body class="detail-page">
+    <header class="detail-topbar">
+      <a class="back-link" href="home.html" aria-label="목록으로 돌아가기">
+        <i data-lucide="chevron-left" aria-hidden="true"></i>
+        목록
+      </a>
+      <span id="detailCategory" class="category-pill">장비</span>
+    </header>
+
+    <main class="detail-main">
+      <section class="detail-hero">
+        <div id="detailThumb" class="detail-thumb" aria-hidden="true"></div>
+        <div>
+          <p class="eyebrow">Equipment Lesson</p>
+          <h1 id="detailTitle">장비 학습</h1>
+          <p id="detailRole" class="detail-role"></p>
+        </div>
+      </section>
+
+      <section class="video-section" aria-label="교육영상">
+        <div id="videoFrame" class="video-frame"></div>
+        <div class="video-actions">
+          <button id="markWatched" class="button button-secondary" type="button">
+            <i data-lucide="check" aria-hidden="true"></i>
+            시청 확인
+          </button>
+          <button id="markComplete" class="button button-primary" type="button">
+            <i data-lucide="badge-check" aria-hidden="true"></i>
+            학습 완료
+          </button>
+        </div>
+      </section>
+
+      <section class="lesson-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Procedure</p>
+            <h2>사용 절차</h2>
+          </div>
+        </div>
+        <ol id="detailSteps" class="step-list"></ol>
+      </section>
+
+      <section class="lesson-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Safety</p>
+            <h2>주의사항</h2>
+          </div>
+        </div>
+        <ul id="detailCautions" class="caution-list"></ul>
+      </section>
+
+      <section class="lesson-section quiz-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Quiz</p>
+            <h2>체크퀴즈</h2>
+          </div>
+          <span id="quizStatus">미응시</span>
+        </div>
+        <div id="quizList" class="quiz-list"></div>
+        <button id="submitQuiz" class="button button-secondary button-wide" type="button">
+          <i data-lucide="list-checks" aria-hidden="true"></i>
+          정답 확인
+        </button>
+        <p id="quizFeedback" class="quiz-feedback" role="status"></p>
+      </section>
+    </main>
+  </body>
+</html>

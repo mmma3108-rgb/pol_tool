@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#123c35" />
+    <title>순찰차 탑재장비 교육 | 입장</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <script src="data/equipment.js" defer></script>
+    <script src="scripts/shared.js" defer></script>
+    <script src="scripts/login.js" defer></script>
+  </head>
+  <body class="login-page">
+    <main class="login-layout">
+      <section class="login-panel" aria-labelledby="login-title">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">POLICE</div>
+          <div>
+            <p class="eyebrow">지역경찰 교육훈련</p>
+            <h1 id="login-title">순찰차 탑재장비 교육</h1>
+          </div>
+        </div>
+
+        <p class="login-summary">
+          장비별 사용 목적, 기본 절차, 주의사항을 휴대전화로 반복 학습하는 모바일 교육앱입니다.
+        </p>
+
+        <form id="entryForm" class="entry-form">
+          <label class="field">
+            <span>접속 비밀번호</span>
+            <input id="entryCode" type="password" inputmode="numeric" autocomplete="off" required />
+          </label>
+
+          <label class="field">
+            <span>소속</span>
+            <input id="entryUnit" type="text" autocomplete="organization" placeholder="예: ○○경찰서 ○○지구대" required />
+          </label>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>성명</span>
+              <input id="entryName" type="text" autocomplete="name" required />
+            </label>
+
+            <label class="field">
+              <span>계급</span>
+              <select id="entryRank" required>
+                <option value="">선택</option>
+                <option>순경</option>
+                <option>경장</option>
+                <option>경사</option>
+                <option>경위</option>
+                <option>경감</option>
+                <option>기타</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="consent-row">
+            <input id="entryConsent" type="checkbox" required />
+            <span>교육 목적 외 공유 금지 및 접속정보 저장에 동의합니다.</span>
+          </label>
+
+          <p id="entryError" class="form-error" role="alert"></p>
+
+          <button class="button button-primary button-large" type="submit">
+            <i data-lucide="log-in" aria-hidden="true"></i>
+            입장하기
+          </button>
+        </form>
+
+        <div class="security-note">
+          <i data-lucide="shield-alert" aria-hidden="true"></i>
+          <span>이 앱은 비예산 시범 운영용입니다. 민감한 전술, 내부 문서, 보관 위치는 영상에 포함하지 마세요.</span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

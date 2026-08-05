@@ -1,0 +1,17 @@
+{
+  "name": "순찰차 탑재장비 교육",
+  "short_name": "장비교육",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f4ef",
+  "theme_color": "#0f766e",
+  "description": "지역경찰 순찰차 탑재장비 모바일 교육앱",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

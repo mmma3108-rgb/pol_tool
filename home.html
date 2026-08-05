@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#123c35" />
+    <title>순찰차 탑재장비 교육 | 장비 목록</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <script src="data/equipment.js" defer></script>
+    <script src="scripts/shared.js" defer></script>
+    <script src="scripts/home.js" defer></script>
+  </head>
+  <body class="app-page">
+    <header class="app-header">
+      <div class="app-header-inner">
+        <div>
+          <p class="eyebrow">모바일 학습</p>
+          <h1>순찰차 탑재장비</h1>
+        </div>
+        <button id="profileButton" class="icon-button" type="button" aria-label="접속 정보">
+          <i data-lucide="user-round" aria-hidden="true"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="hero-panel">
+        <div>
+          <p id="welcomeText" class="hero-kicker">학습자 확인 중</p>
+          <h2>필요할 때 바로 확인하는 장비 기본 과정</h2>
+        </div>
+        <div class="hero-meter" aria-label="전체 완료율">
+          <span id="progressValue">0%</span>
+          <small>완료율</small>
+        </div>
+      </section>
+
+      <section class="metric-strip" aria-label="학습 현황">
+        <div>
+          <strong id="completedValue">0/35</strong>
+          <span>완료 장비</span>
+        </div>
+        <div>
+          <strong id="quizValue">0</strong>
+          <span>통과 퀴즈</span>
+        </div>
+        <div>
+          <strong id="leftValue">35</strong>
+          <span>남은 장비</span>
+        </div>
+      </section>
+
+      <section class="tool-band" aria-label="검색 및 분류">
+        <label class="search-box">
+          <i data-lucide="search" aria-hidden="true"></i>
+          <input id="searchInput" type="search" placeholder="장비명, 역할, 주의사항 검색" />
+        </label>
+        <div class="segment-control" role="tablist" aria-label="장비 분류">
+          <button class="segment is-active" type="button" data-filter="all">전체</button>
+          <button class="segment" type="button" data-filter="required">필수</button>
+          <button class="segment" type="button" data-filter="optional">선택</button>
+          <button class="segment" type="button" data-filter="scenario">상황</button>
+        </div>
+      </section>
+
+      <section id="equipmentSection" class="content-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Equipment</p>
+            <h2>장비 학습</h2>
+          </div>
+          <span id="resultCount">35개</span>
+        </div>
+        <div id="equipmentGrid" class="equipment-list"></div>
+        <p class="helper-text">사진은 추후 `thumbnailUrl`에 연결하면 자동 표시됩니다.</p>
+      </section>
+
+      <section id="scenarioSection" class="content-section" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Scenario</p>
+            <h2>상황별 학습</h2>
+          </div>
+          <span>3개 과정</span>
+        </div>
+        <div id="scenarioGrid" class="scenario-list"></div>
+      </section>
+    </main>
+
+    <dialog id="profileDialog" class="sheet-dialog">
+      <article class="sheet-panel">
+        <header class="sheet-header">
+          <div>
+            <p class="eyebrow">접속 정보</p>
+            <h2 id="profileTitle">학습자</h2>
+          </div>
+          <button id="closeProfile" class="icon-button" type="button" aria-label="닫기">
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </header>
+        <dl class="profile-list">
+          <div>
+            <dt>소속</dt>
+            <dd id="profileUnit"></dd>
+          </div>
+          <div>
+            <dt>계급</dt>
+            <dd id="profileRank"></dd>
+          </div>
+          <div>
+            <dt>입장 시각</dt>
+            <dd id="profileTime"></dd>
+          </div>
+        </dl>
+        <div class="sheet-actions">
+          <button id="resetProgress" class="button button-secondary" type="button">
+            <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+            학습기록 초기화
+          </button>
+          <button id="logoutButton" class="button button-danger" type="button">
+            <i data-lucide="log-out" aria-hidden="true"></i>
+            접속정보 삭제
+          </button>
+        </div>
+      </article>
+    </dialog>
+  </body>
+</html>
