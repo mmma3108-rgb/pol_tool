@@ -16,9 +16,9 @@
       "detailThumb",
       "detailTitle",
       "detailRole",
+      "backToList",
       "videoFrame",
-      "markWatched",
-      "markComplete",
+      "videoStatus",
       "detailSteps",
       "detailCautions",
       "quizStatus",
@@ -31,14 +31,6 @@
   }
 
   function bindEvents() {
-    nodes.markWatched.addEventListener("click", () => {
-      TrainingApp.updateProgress(currentEquipment.id, { watched: true });
-      renderProgressState();
-    });
-    nodes.markComplete.addEventListener("click", () => {
-      TrainingApp.updateProgress(currentEquipment.id, { watched: true, completed: true });
-      renderProgressState();
-    });
     nodes.submitQuiz.addEventListener("click", submitQuiz);
   }
 
@@ -51,13 +43,14 @@
       document.body.innerHTML = `
         <main class="not-found">
           <h1>장비 정보를 찾을 수 없습니다.</h1>
-          <a class="button button-primary" href="home.html">목록으로 이동</a>
+          <a class="button button-primary" href="home.html?view=equipment">목록으로 이동</a>
         </main>
       `;
       return;
     }
 
-    document.title = `순찰차 탑재장비 교육 | ${currentEquipment.name}`;
+    document.title = `전남경찰청 탑재장비 모바일 학습 앱 | ${currentEquipment.name}`;
+    renderBackLink(params);
     nodes.detailCategory.textContent = currentEquipment.category === "required" ? "필수장비" : "선택장비";
     nodes.detailCategory.classList.toggle("optional", currentEquipment.category === "optional");
     nodes.detailTitle.textContent = currentEquipment.name;
@@ -67,6 +60,13 @@
     renderSteps();
     renderQuiz();
     renderProgressState();
+    TrainingApp.sendAnalytics("equipment_open", getEquipmentDetails());
+  }
+
+  function renderBackLink(params) {
+    const filter = params.get("filter");
+    const validFilter = ["all", "required", "optional"].includes(filter) ? filter : "all";
+    nodes.backToList.href = `home.html?view=equipment&filter=${encodeURIComponent(validFilter)}`;
   }
 
   function renderThumbnail() {
@@ -84,20 +84,34 @@
         <div class="video-placeholder">
           <i data-lucide="video" aria-hidden="true"></i>
           <strong>영상 준비 중</strong>
-          <span>촬영 완료 후 data/equipment.js에 영상 링크를 연결하세요.</span>
+          <span>교육영상 준비 후 재생 가능</span>
         </div>
       `;
       return;
     }
 
-    nodes.videoFrame.innerHTML = `
-      <iframe
-        title="${TrainingApp.escapeHtml(currentEquipment.name)} 교육영상"
-        src="${TrainingApp.toEmbedUrl(currentEquipment.videoUrl)}"
-        allowfullscreen
-        loading="lazy"
-      ></iframe>
-    `;
+    const videoUrl = currentEquipment.videoUrl;
+    if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(videoUrl)) {
+      nodes.videoFrame.innerHTML = `
+        <video controls playsinline preload="metadata">
+          <source src="${TrainingApp.escapeHtml(videoUrl)}" type="video/mp4" />
+          현재 브라우저에서 영상을 재생할 수 없습니다.
+        </video>
+      `;
+    } else {
+      nodes.videoFrame.innerHTML = `
+        <iframe
+          title="${TrainingApp.escapeHtml(currentEquipment.name)} 교육영상"
+          src="${TrainingApp.toEmbedUrl(videoUrl)}"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+      `;
+    }
+
+    const video = nodes.videoFrame.querySelector("video");
+    nodes.videoFrame.addEventListener("click", markVideoComplete, { once: true });
+    if (video) video.addEventListener("play", markVideoComplete, { once: true });
   }
 
   function renderSteps() {
@@ -133,9 +147,17 @@
 
   function renderProgressState() {
     const progress = TrainingApp.getProgress()[currentEquipment.id] || {};
-    nodes.markWatched.classList.toggle("is-done", Boolean(progress.watched));
-    nodes.markComplete.classList.toggle("is-done", Boolean(progress.completed));
+    nodes.videoStatus.textContent = progress.completed ? "영상 시청 완료" : "영상 미시청";
+    nodes.videoStatus.classList.toggle("is-done", Boolean(progress.completed));
     nodes.quizStatus.textContent = progress.quizPassed ? "통과" : "미응시";
+  }
+
+  function markVideoComplete() {
+    const progress = TrainingApp.getProgress()[currentEquipment.id] || {};
+    if (progress.completed) return;
+    TrainingApp.updateProgress(currentEquipment.id, { watched: true, completed: true });
+    renderProgressState();
+    TrainingApp.sendAnalytics("completed", getEquipmentDetails());
   }
 
   function submitQuiz() {
@@ -152,6 +174,19 @@
     if (passed) {
       TrainingApp.updateProgress(currentEquipment.id, { quizPassed: true });
       renderProgressState();
+      TrainingApp.sendAnalytics("quiz_passed", {
+        ...getEquipmentDetails(),
+        correct,
+        totalQuestions: currentEquipment.quiz.length,
+      });
     }
+  }
+
+  function getEquipmentDetails() {
+    return {
+      equipmentId: currentEquipment.id,
+      equipmentName: currentEquipment.name,
+      equipmentCategory: currentEquipment.category,
+    };
   }
 })();

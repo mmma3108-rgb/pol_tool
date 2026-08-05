@@ -2,6 +2,8 @@
   const storageKeys = {
     profile: "patrolTraining.profile",
     progress: "patrolTraining.progress",
+    progressPrefix: "patrolTraining.progress.",
+    clientId: "patrolTraining.clientId",
   };
 
   function getProfile() {
@@ -28,14 +30,14 @@
 
   function getProgress() {
     try {
-      return JSON.parse(localStorage.getItem(storageKeys.progress)) || {};
+      return JSON.parse(localStorage.getItem(getProgressKey())) || {};
     } catch {
       return {};
     }
   }
 
   function setProgress(progress) {
-    localStorage.setItem(storageKeys.progress, JSON.stringify(progress));
+    localStorage.setItem(getProgressKey(), JSON.stringify(progress));
   }
 
   function updateProgress(id, next) {
@@ -50,7 +52,12 @@
   }
 
   function resetProgress() {
-    localStorage.removeItem(storageKeys.progress);
+    localStorage.removeItem(getProgressKey());
+  }
+
+  function getProgressKey(profile = getProfile()) {
+    if (!profile?.unit || !profile?.name) return storageKeys.progress;
+    return `${storageKeys.progressPrefix}${encodeURIComponent(`${profile.unit}|${profile.name}`)}`;
   }
 
   function getEquipmentById(id) {
@@ -69,6 +76,43 @@
       left: total - completed,
       percent: Math.round((completed / total) * 100),
     };
+  }
+
+  function getClientId() {
+    let id = localStorage.getItem(storageKeys.clientId);
+    if (!id) {
+      id = crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      localStorage.setItem(storageKeys.clientId, id);
+    }
+    return id;
+  }
+
+  function sendAnalytics(eventType, details = {}) {
+    const config = window.ANALYTICS_CONFIG || {};
+    if (!config.enabled || !config.endpointUrl) return;
+
+    const payload = {
+      eventType,
+      eventAt: new Date().toISOString(),
+      appVersion: config.appVersion || "",
+      clientId: getClientId(),
+      userAgent: navigator.userAgent,
+      profile: getProfile() || {},
+      summary: getProgressSummary(),
+      details,
+    };
+
+    try {
+      fetch(config.endpointUrl, {
+        method: "POST",
+        mode: "no-cors",
+        keepalive: true,
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      // Analytics must never block training access.
+    }
   }
 
   function toEmbedUrl(url) {
@@ -124,8 +168,10 @@
     setProgress,
     updateProgress,
     resetProgress,
+    getProgressKey,
     getEquipmentById,
     getProgressSummary,
+    sendAnalytics,
     toEmbedUrl,
     escapeHtml,
     formatDate,

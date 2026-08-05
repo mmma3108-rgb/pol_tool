@@ -4,20 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#123c35" />
-    <title>순찰차 탑재장비 교육 | 장비 목록</title>
+    <title>전남경찰청 탑재장비 모바일 학습 앱 | 홈</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
     <script src="data/equipment.js" defer></script>
+    <script src="data/analytics.js" defer></script>
     <script src="scripts/shared.js" defer></script>
     <script src="scripts/home.js" defer></script>
   </head>
   <body class="app-page">
     <header class="app-header">
       <div class="app-header-inner">
-        <div>
-          <p class="eyebrow">모바일 학습</p>
-          <h1>순찰차 탑재장비</h1>
+        <div class="app-title-lockup">
+          <img class="app-ci" src="assets/jeonnam-police-ci.png?v=20260805-4" alt="" />
+          <h1 class="app-title">
+            <span>전남경찰청</span>
+            <span>탑재장비 모바일 학습 앱</span>
+          </h1>
         </div>
         <button id="profileButton" class="icon-button" type="button" aria-label="접속 정보">
           <i data-lucide="user-round" aria-hidden="true"></i>
@@ -26,66 +30,86 @@
     </header>
 
     <main class="page-main">
-      <section class="hero-panel">
-        <div>
-          <p id="welcomeText" class="hero-kicker">학습자 확인 중</p>
-          <h2>필요할 때 바로 확인하는 장비 기본 과정</h2>
-        </div>
-        <div class="hero-meter" aria-label="전체 완료율">
-          <span id="progressValue">0%</span>
-          <small>완료율</small>
-        </div>
+      <section class="hub-intro">
+        <p id="welcomeText" class="hero-kicker">접속자 확인 중</p>
       </section>
 
-      <section class="metric-strip" aria-label="학습 현황">
-        <div>
-          <strong id="completedValue">0/35</strong>
-          <span>완료 장비</span>
-        </div>
-        <div>
-          <strong id="quizValue">0</strong>
-          <span>통과 퀴즈</span>
-        </div>
-        <div>
-          <strong id="leftValue">35</strong>
-          <span>남은 장비</span>
-        </div>
+      <section class="entry-grid" aria-label="주요 학습 메뉴">
+        <button class="entry-card" type="button" data-view="equipment">
+          <i data-lucide="shield-check" aria-hidden="true"></i>
+          <strong>장비 숙지</strong>
+          <span>필수·선택 장비 사용 방법</span>
+        </button>
+        <button class="entry-card" type="button" data-view="scenario">
+          <i data-lucide="route" aria-hidden="true"></i>
+          <strong>현장 활용</strong>
+          <span>상황별 장비 활용 방법</span>
+        </button>
+        <button class="entry-card" type="button" data-view="progress">
+          <i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i>
+          <strong>학습 현황</strong>
+          <span>시청 완료·퀴즈 확인</span>
+        </button>
       </section>
 
-      <section class="tool-band" aria-label="검색 및 분류">
+      <section id="toolSection" class="tool-band" aria-label="검색 및 분류" hidden>
         <label class="search-box">
           <i data-lucide="search" aria-hidden="true"></i>
-          <input id="searchInput" type="search" placeholder="장비명, 역할, 주의사항 검색" />
+          <input id="searchInput" type="search" placeholder="장비명 검색" />
         </label>
         <div class="segment-control" role="tablist" aria-label="장비 분류">
           <button class="segment is-active" type="button" data-filter="all">전체</button>
           <button class="segment" type="button" data-filter="required">필수</button>
           <button class="segment" type="button" data-filter="optional">선택</button>
-          <button class="segment" type="button" data-filter="scenario">상황</button>
         </div>
       </section>
 
-      <section id="equipmentSection" class="content-section">
+      <section id="equipmentSection" class="content-section" hidden>
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Equipment</p>
-            <h2>장비 학습</h2>
+            <h2>장비 숙지</h2>
           </div>
           <span id="resultCount">35개</span>
         </div>
         <div id="equipmentGrid" class="equipment-list"></div>
-        <p class="helper-text">사진은 추후 `thumbnailUrl`에 연결하면 자동 표시됩니다.</p>
       </section>
 
       <section id="scenarioSection" class="content-section" hidden>
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Scenario</p>
-            <h2>상황별 학습</h2>
+            <h2>현장 활용</h2>
           </div>
           <span>3개 과정</span>
         </div>
         <div id="scenarioGrid" class="scenario-list"></div>
+      </section>
+
+      <section id="progressSection" class="content-section" hidden>
+        <div class="section-heading">
+          <div>
+            <h2>학습 현황</h2>
+          </div>
+          <span id="progressLabel">0%</span>
+        </div>
+        <div class="progress-panel">
+          <div class="progress-track">
+            <span id="progressBar"></span>
+          </div>
+          <dl>
+            <div>
+              <dt>시청 완료 장비</dt>
+              <dd id="progressCompleted">0/35</dd>
+            </div>
+            <div>
+              <dt>통과 퀴즈</dt>
+              <dd id="progressQuiz">0</dd>
+            </div>
+            <div>
+              <dt>남은 장비</dt>
+              <dd id="progressLeft">35</dd>
+            </div>
+          </dl>
+        </div>
       </section>
     </main>
 

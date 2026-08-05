@@ -1,16 +1,16 @@
 {
-  "name": "순찰차 탑재장비 교육",
-  "short_name": "장비교육",
+  "name": "전남경찰청 탑재장비 모바일 학습 앱",
+  "short_name": "장비학습",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f6f4ef",
   "theme_color": "#0f766e",
-  "description": "지역경찰 순찰차 탑재장비 모바일 교육앱",
+  "description": "전남경찰청 탑재장비 모바일 학습 앱",
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/jeonnam-police-ci.png?v=20260805-4",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

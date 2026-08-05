@@ -1,5 +1,6 @@
 (function () {
   const state = {
+    view: "hub",
     filter: "all",
     query: "",
   };
@@ -11,24 +12,29 @@
     if (!profile) return;
     bindNodes();
     bindEvents();
+    restoreInitialView();
     renderProfileSummary(profile);
     renderAll();
+    TrainingApp.sendAnalytics("home_open");
     TrainingApp.refreshIcons();
   });
 
   function bindNodes() {
     [
       "welcomeText",
-      "progressValue",
-      "completedValue",
-      "quizValue",
-      "leftValue",
       "searchInput",
       "resultCount",
+      "toolSection",
       "equipmentGrid",
       "scenarioGrid",
       "equipmentSection",
       "scenarioSection",
+      "progressSection",
+      "progressLabel",
+      "progressBar",
+      "progressCompleted",
+      "progressQuiz",
+      "progressLeft",
       "profileButton",
       "profileDialog",
       "profileTitle",
@@ -49,10 +55,14 @@
       renderEquipment();
     });
 
+    document.querySelectorAll(".entry-card").forEach((button) => {
+      button.addEventListener("click", () => setView(button.dataset.view));
+    });
+
     document.querySelectorAll(".segment").forEach((button) => {
       button.addEventListener("click", () => {
         state.filter = button.dataset.filter;
-        document.querySelectorAll(".segment").forEach((item) => item.classList.toggle("is-active", item === button));
+        syncSegments();
         syncSections();
         renderEquipment();
       });
@@ -72,22 +82,37 @@
   }
 
   function renderProfileSummary(profile) {
-    nodes.welcomeText.textContent = `${profile.rank} ${profile.name}님, 필요한 장비부터 확인하세요.`;
+    nodes.welcomeText.textContent = `(접속자) ${profile.rank} ${profile.name} / ${formatUnit(profile)}`;
+  }
+
+  function formatUnit(profile) {
+    if (profile.orgType === "local" && profile.station && profile.localOffice) {
+      return `${profile.station} ${profile.localOffice}`;
+    }
+
+    if (profile.orgType === "station" && profile.station) {
+      return `${profile.station}경찰서`;
+    }
+
+    return profile.unit;
   }
 
   function renderAll() {
     renderStatus();
     renderEquipment();
     renderScenarios();
+    syncEntryCards();
+    syncSegments();
     syncSections();
   }
 
   function renderStatus() {
     const summary = TrainingApp.getProgressSummary();
-    nodes.progressValue.textContent = `${summary.percent}%`;
-    nodes.completedValue.textContent = `${summary.completed}/${summary.total}`;
-    nodes.quizValue.textContent = String(summary.quizzes);
-    nodes.leftValue.textContent = String(summary.left);
+    nodes.progressLabel.textContent = `${summary.percent}%`;
+    nodes.progressBar.style.width = `${summary.percent}%`;
+    nodes.progressCompleted.textContent = `${summary.completed}/${summary.total}`;
+    nodes.progressQuiz.textContent = String(summary.quizzes);
+    nodes.progressLeft.textContent = String(summary.left);
   }
 
   function renderEquipment() {
@@ -96,7 +121,7 @@
       const matchesCategory = state.filter === "all" || item.category === state.filter;
       const haystack = [item.name, item.role, item.category, ...item.tags, ...item.cautions].join(" ").toLowerCase();
       const matchesSearch = !state.query || haystack.includes(state.query);
-      return state.filter !== "scenario" && matchesCategory && matchesSearch;
+      return matchesCategory && matchesSearch;
     });
 
     nodes.resultCount.textContent = `${filtered.length}개`;
@@ -111,15 +136,16 @@
       const itemProgress = progress[item.id] || {};
       const link = document.createElement("a");
       link.className = "equipment-row";
-      link.href = `equipment.html?id=${encodeURIComponent(item.id)}`;
+      link.href = `equipment.html?id=${encodeURIComponent(item.id)}&filter=${encodeURIComponent(state.filter)}`;
       link.innerHTML = `
         ${renderThumbnail(item)}
         <span class="equipment-copy">
+          <em>${TrainingApp.escapeHtml(item.group)}</em>
           <strong>${TrainingApp.escapeHtml(item.name)}</strong>
           <small>${TrainingApp.escapeHtml(item.role)}</small>
         </span>
         <span class="row-status ${itemProgress.completed ? "done" : itemProgress.watched ? "watched" : ""}">
-          ${itemProgress.completed ? "완료" : itemProgress.watched ? "시청" : "대기"}
+          ${itemProgress.completed ? "시청 완료" : itemProgress.watched ? "시청" : "미시청"}
         </span>
         <i data-lucide="chevron-right" aria-hidden="true"></i>
       `;
@@ -173,9 +199,42 @@
   }
 
   function syncSections() {
-    const showScenarios = state.filter === "scenario";
-    nodes.equipmentSection.hidden = showScenarios;
-    nodes.scenarioSection.hidden = !showScenarios;
+    nodes.toolSection.hidden = state.view !== "equipment";
+    nodes.equipmentSection.hidden = state.view !== "equipment";
+    nodes.scenarioSection.hidden = state.view !== "scenario";
+    nodes.progressSection.hidden = state.view !== "progress";
+  }
+
+  function restoreInitialView() {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get("view");
+    const filter = params.get("filter");
+    if (["equipment", "scenario", "progress"].includes(view)) {
+      state.view = view;
+    }
+    if (["all", "required", "optional"].includes(filter)) {
+      state.filter = filter;
+    }
+  }
+
+  function syncEntryCards() {
+    document.querySelectorAll(".entry-card").forEach((item) => {
+      item.classList.toggle("is-active", item.dataset.view === state.view);
+    });
+  }
+
+  function syncSegments() {
+    document.querySelectorAll(".segment").forEach((item) => {
+      item.classList.toggle("is-active", item.dataset.filter === state.filter);
+    });
+  }
+
+  function setView(view) {
+    state.view = view;
+    syncEntryCards();
+    syncSections();
+    if (view === "equipment") renderEquipment();
+    if (view === "scenario") renderScenarios();
   }
 
   function openProfile() {

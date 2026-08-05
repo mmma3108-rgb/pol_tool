@@ -1,4 +1,4 @@
-const CACHE_NAME = "patrol-equipment-training-v3";
+const CACHE_NAME = "patrol-equipment-training-v31";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -11,8 +11,9 @@ const APP_ASSETS = [
   "./scripts/equipment-page.js",
   "./data/equipment.js",
   "./data/organization.js",
+  "./data/analytics.js",
   "./manifest.webmanifest",
-  "./icon.svg",
+  "./assets/jeonnam-police-ci.png",
 ];
 
 self.addEventListener("install", (event) => {

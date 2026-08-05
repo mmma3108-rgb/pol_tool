@@ -44,16 +44,24 @@
         return;
       }
 
+      const userName = name.value.trim();
+      if (!isValidKoreanName(userName)) {
+        error.textContent = "성명은 한글 완성형 2~10자로 입력하세요.";
+        name.focus();
+        return;
+      }
+
       TrainingApp.setProfile({
         unit: org.unit,
         orgType: org.type,
         station: org.station,
         localOffice: org.localOffice,
-        name: name.value.trim(),
+        name: userName,
         rank: rank.value,
         enteredAt: new Date().toISOString(),
       });
       saveLastSelection();
+      TrainingApp.sendAnalytics("login");
 
       window.location.href = "home.html";
     });
@@ -162,6 +170,10 @@
       } catch {
         localStorage.removeItem(lastSelectionKey);
       }
+    }
+
+    function isValidKoreanName(value) {
+      return /^[가-힣]{2,10}$/.test(value);
     }
   });
 })();
