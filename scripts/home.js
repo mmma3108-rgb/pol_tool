@@ -56,7 +56,7 @@
     });
 
     document.querySelectorAll(".entry-card").forEach((button) => {
-      button.addEventListener("click", () => setView(button.dataset.view));
+      button.addEventListener("click", () => setView(button.dataset.view, { scroll: true }));
     });
 
     document.querySelectorAll(".segment").forEach((button) => {
@@ -229,12 +229,29 @@
     });
   }
 
-  function setView(view) {
+  function setView(view, options = {}) {
     state.view = view;
     syncEntryCards();
     syncSections();
     if (view === "equipment") renderEquipment();
     if (view === "scenario") renderScenarios();
+    if (options.scroll) scrollToActiveSection();
+  }
+
+  function scrollToActiveSection() {
+    const target =
+      state.view === "equipment"
+        ? nodes.toolSection
+        : state.view === "scenario"
+          ? nodes.scenarioSection
+          : state.view === "progress"
+            ? nodes.progressSection
+            : null;
+
+    if (!target) return;
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   function openProfile() {

@@ -543,6 +543,7 @@ select:focus {
   display: grid;
   gap: 10px;
   margin: 14px 0 18px;
+  scroll-margin-top: 82px;
 }
 
 .search-box {
@@ -594,6 +595,10 @@ select:focus {
   justify-content: space-between;
   gap: 16px;
   margin: 18px 0 10px;
+}
+
+.content-section {
+  scroll-margin-top: 82px;
 }
 
 .section-heading.compact {
