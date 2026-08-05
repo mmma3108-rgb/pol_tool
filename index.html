@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="styles.css" />
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
     <script src="data/equipment.js" defer></script>
+    <script src="data/organization.js" defer></script>
     <script src="scripts/shared.js" defer></script>
     <script src="scripts/login.js" defer></script>
   </head>
@@ -33,10 +34,40 @@
             <input id="entryCode" type="password" inputmode="numeric" autocomplete="off" required />
           </label>
 
-          <label class="field">
-            <span>소속</span>
-            <input id="entryUnit" type="text" autocomplete="organization" placeholder="예: ○○경찰서 ○○지구대" required />
-          </label>
+          <section class="org-picker" aria-label="소속 선택">
+            <div class="field">
+              <span>소속 구분</span>
+              <div class="org-type-group" role="radiogroup" aria-label="소속 구분">
+                <label>
+                  <input type="radio" name="entryOrgType" value="local" checked />
+                  <span>지역관서</span>
+                </label>
+                <label>
+                  <input type="radio" name="entryOrgType" value="station" />
+                  <span>경찰서</span>
+                </label>
+                <label>
+                  <input type="radio" name="entryOrgType" value="headquarters" />
+                  <span>전남청</span>
+                </label>
+              </div>
+            </div>
+
+            <label id="stationField" class="field">
+              <span>경찰서</span>
+              <select id="entryStation"></select>
+            </label>
+
+            <label id="localOfficeField" class="field">
+              <span>지역관서</span>
+              <select id="entryLocalOffice"></select>
+            </label>
+
+            <label id="headquartersField" class="field" hidden>
+              <span>소속</span>
+              <select id="entryHeadquarters"></select>
+            </label>
+          </section>
 
           <div class="form-grid">
             <label class="field">

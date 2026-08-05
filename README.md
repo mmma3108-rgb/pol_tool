@@ -11,6 +11,7 @@ GitHub Pages에 올려서 사용할 수 있는 정적 PWA입니다. 영상 촬�
 ## 수정할 곳
 
 - 접속 비밀번호: `data/equipment.js`의 `APP_CONFIG.accessCode`
+- 소속 선택 목록: `data/organization.js`
 - 장비명/영상 링크: `data/equipment.js`의 `EQUIPMENT_OVERRIDES`
 - 장비 사진: `assets/thumbnails` 폴더에 사진을 넣고 `thumbnailUrl`에 경로 입력
 - 공통 설명: `baseSteps`, `baseCautions`, `makeEquipment` 기본 문구

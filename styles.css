@@ -126,12 +126,58 @@ p {
   gap: 14px;
 }
 
+.org-picker {
+  display: grid;
+  gap: 12px;
+}
+
 .field span {
   display: block;
   margin-bottom: 7px;
   color: #25312d;
   font-size: 14px;
   font-weight: 850;
+}
+
+.org-type-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.org-type-group label {
+  min-width: 0;
+}
+
+.org-type-group input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.org-type-group span {
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0 8px;
+  background: #fff;
+  color: #39433f;
+  font-size: 14px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.org-type-group input:checked + span {
+  border-color: var(--teal);
+  background: var(--teal-dark);
+  color: #fff;
+}
+
+.org-type-group input:focus + span {
+  outline: 3px solid rgba(15, 118, 110, 0.2);
 }
 
 input,
@@ -929,8 +975,8 @@ select:focus {
   }
 
   .login-panel {
-    width: 100%;
-    max-width: 100%;
+    width: 394px;
+    max-width: calc(100vw - 36px);
     padding: 20px;
   }
 
@@ -980,6 +1026,15 @@ select:focus {
 
   .segment {
     font-size: 14px;
+  }
+
+  .org-type-group {
+    gap: 6px;
+  }
+
+  .org-type-group span {
+    min-height: 42px;
+    font-size: 13px;
   }
 
   .equipment-row {
