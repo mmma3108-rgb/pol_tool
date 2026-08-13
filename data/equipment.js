@@ -104,7 +104,6 @@ const EQUIPMENT_OVERRIDES = {
     name: "소화기",
     group: "현장안전 장비",
     role: "초기 화재 대응, 현장 안전 확보",
-    videoUrl: "assets/videos/fire.mp4",
     thumbnailUrl: "assets/thumbnails/req-13-fire-extinguisher.jpg",
     steps: [
       "주변 위험요소를 확인하고 인명 대피와 현장 통제를 우선 실시",
@@ -328,12 +327,17 @@ function makeEquipment(name, category, index) {
     group: custom.group || label,
     role: custom.role || `${label} ${displayNumber}의 역할과 사용 시점을 학습합니다. 실제 장비명과 설명으로 교체하세요.`,
     tags: [label, custom.group || "", "순찰차", "기본교육"].filter(Boolean),
-    videoUrl: custom.videoUrl || "",
+    videoUrl: custom.videoUrl || getDefaultVideoUrl(category, index),
     thumbnailUrl: custom.thumbnailUrl || "",
     steps: custom.steps || baseSteps,
     cautions: custom.cautions || baseCautions,
     quiz: custom.quiz || defaultQuiz,
   };
+}
+
+function getDefaultVideoUrl(category, index) {
+  const groupNumber = category === "required" ? "1" : "2";
+  return `assets/videos/${groupNumber}-${index + 1}.mp4`;
 }
 
 const EQUIPMENT = [

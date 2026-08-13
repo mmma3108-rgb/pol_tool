@@ -235,23 +235,27 @@
     syncSections();
     if (view === "equipment") renderEquipment();
     if (view === "scenario") renderScenarios();
-    if (options.scroll) scrollToActiveSection();
+    if (options.scroll) scrollToActiveSection(view);
   }
 
-  function scrollToActiveSection() {
+  function scrollToActiveSection(view) {
     const target =
-      state.view === "equipment"
+      view === "equipment"
         ? nodes.toolSection
-        : state.view === "scenario"
+        : view === "scenario"
           ? nodes.scenarioSection
-          : state.view === "progress"
+          : view === "progress"
             ? nodes.progressSection
             : null;
 
     if (!target) return;
-    requestAnimationFrame(() => {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+    window.setTimeout(() => {
+      const headerHeight = document.querySelector(".app-header")?.offsetHeight || 0;
+      const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+      window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+      target.classList.add("section-focus");
+      window.setTimeout(() => target.classList.remove("section-focus"), 900);
+    }, 80);
   }
 
   function openProfile() {

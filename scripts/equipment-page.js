@@ -32,6 +32,8 @@
 
   function bindEvents() {
     nodes.submitQuiz.addEventListener("click", submitQuiz);
+    nodes.videoFrame.addEventListener("contextmenu", blockVideoSave);
+    nodes.videoFrame.addEventListener("dragstart", blockVideoSave);
   }
 
   function loadEquipment() {
@@ -78,40 +80,85 @@
     nodes.detailThumb.innerHTML = `<i data-lucide="shield-check" aria-hidden="true"></i>`;
   }
 
-  function renderVideo() {
+  async function renderVideo() {
     if (!currentEquipment.videoUrl) {
-      nodes.videoFrame.innerHTML = `
-        <div class="video-placeholder">
-          <i data-lucide="video" aria-hidden="true"></i>
-          <strong>영상 준비 중</strong>
-          <span>교육영상 준비 후 재생 가능</span>
-        </div>
-      `;
+      renderVideoPlaceholder();
       return;
     }
 
     const videoUrl = currentEquipment.videoUrl;
+    const hasVideo = await checkVideoExists(videoUrl);
+    if (!hasVideo) {
+      renderVideoPlaceholder();
+      return;
+    }
+
+    const watermarkText = TrainingApp.escapeHtml(getWatermarkText());
     if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(videoUrl)) {
       nodes.videoFrame.innerHTML = `
-        <video controls playsinline preload="metadata">
-          <source src="${TrainingApp.escapeHtml(videoUrl)}" type="video/mp4" />
-          현재 브라우저에서 영상을 재생할 수 없습니다.
-        </video>
+        <div class="secure-video-shell">
+          <video
+            controls
+            controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
+            disablePictureInPicture
+            playsinline
+            preload="metadata"
+            draggable="false"
+          >
+            <source src="${TrainingApp.escapeHtml(videoUrl)}" type="video/mp4" />
+            현재 브라우저에서 영상을 재생할 수 없습니다.
+          </video>
+          <div class="video-watermark" aria-hidden="true">${watermarkText}</div>
+          <div class="video-security-note" aria-hidden="true">저장·녹화·공유 금지</div>
+          <button class="secure-fullscreen-button" type="button" aria-label="전체화면">
+            <i data-lucide="maximize" aria-hidden="true"></i>
+          </button>
+        </div>
       `;
     } else {
       nodes.videoFrame.innerHTML = `
-        <iframe
-          title="${TrainingApp.escapeHtml(currentEquipment.name)} 교육영상"
-          src="${TrainingApp.toEmbedUrl(videoUrl)}"
-          allowfullscreen
-          loading="lazy"
-        ></iframe>
+        <div class="secure-video-shell">
+          <iframe
+            title="${TrainingApp.escapeHtml(currentEquipment.name)} 교육영상"
+            src="${TrainingApp.toEmbedUrl(videoUrl)}"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+          <div class="video-watermark" aria-hidden="true">${watermarkText}</div>
+          <div class="video-security-note" aria-hidden="true">저장·녹화·공유 금지</div>
+          <button class="secure-fullscreen-button" type="button" aria-label="전체화면">
+            <i data-lucide="maximize" aria-hidden="true"></i>
+          </button>
+        </div>
       `;
     }
 
     const video = nodes.videoFrame.querySelector("video");
+    const fullscreenButton = nodes.videoFrame.querySelector(".secure-fullscreen-button");
     nodes.videoFrame.addEventListener("click", markVideoComplete, { once: true });
     if (video) video.addEventListener("play", markVideoComplete, { once: true });
+    if (fullscreenButton) fullscreenButton.addEventListener("click", openSecureFullscreen);
+    TrainingApp.refreshIcons();
+  }
+
+  function renderVideoPlaceholder() {
+    nodes.videoFrame.innerHTML = `
+      <div class="video-placeholder">
+        <i data-lucide="video" aria-hidden="true"></i>
+        <strong>영상 준비 중</strong>
+        <span>교육영상 준비 후 재생 가능</span>
+      </div>
+    `;
+    TrainingApp.refreshIcons();
+  }
+
+  async function checkVideoExists(url) {
+    try {
+      const response = await fetch(url, { method: "HEAD", cache: "no-store" });
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 
   function renderSteps() {
@@ -158,6 +205,41 @@
     TrainingApp.updateProgress(currentEquipment.id, { watched: true, completed: true });
     renderProgressState();
     TrainingApp.sendAnalytics("completed", getEquipmentDetails());
+  }
+
+  function blockVideoSave(event) {
+    event.preventDefault();
+  }
+
+  function getWatermarkText() {
+    const profile = TrainingApp.getProfile() || {};
+    const person = [profile.rank, profile.name].filter(Boolean).join(" ");
+    const unit = formatUnit(profile);
+    return [`접속자 ${person}`, unit].filter(Boolean).join(" / ");
+  }
+
+  function openSecureFullscreen(event) {
+    event.stopPropagation();
+    const shell = nodes.videoFrame.querySelector(".secure-video-shell");
+    if (!shell) return;
+
+    if (shell.requestFullscreen) {
+      shell.requestFullscreen();
+    } else if (shell.webkitRequestFullscreen) {
+      shell.webkitRequestFullscreen();
+    }
+  }
+
+  function formatUnit(profile) {
+    if (profile.orgType === "local" && profile.station && profile.localOffice) {
+      return `${profile.station} ${profile.localOffice}`;
+    }
+
+    if (profile.orgType === "station" && profile.station) {
+      return `${profile.station}경찰서`;
+    }
+
+    return profile.unit || "";
   }
 
   function submitQuiz() {
