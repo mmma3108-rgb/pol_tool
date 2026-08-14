@@ -120,7 +120,7 @@ p {
 
 .brand-lockup h1 {
   margin: 0;
-  font-size: 27px;
+  font-size: 26px;
   line-height: 1.18;
   letter-spacing: 0;
 }
@@ -132,6 +132,14 @@ p {
 
 .app-title span {
   display: block;
+}
+
+.brand-lockup .app-title span {
+  white-space: nowrap;
+}
+
+.brand-lockup .app-title span:last-child {
+  font-size: 0.88em;
 }
 
 .entry-form {
@@ -1410,6 +1418,10 @@ select:focus {
 
   .brand-lockup h1 {
     font-size: 22px;
+  }
+
+  .brand-lockup .app-title span:last-child {
+    font-size: 0.84em;
   }
 
   .form-grid,
